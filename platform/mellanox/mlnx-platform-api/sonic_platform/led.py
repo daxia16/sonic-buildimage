@@ -29,6 +29,7 @@ class Led(object):
     STATUS_LED_COLOR_RED_BLINK = 'red_blink'
     STATUS_LED_COLOR_ORANGE = 'orange'
     STATUS_LED_COLOR_ORANGE_BLINK = 'orange_blink'
+    STATUS_LED_COLOR_BLUE = 'blue'
     STATUS_LED_COLOR_OFF = 'off'
 
     LED_ON = '255'
@@ -73,6 +74,14 @@ class Led(object):
 
                 utils.write_file(led_path, Led.LED_ON)
                 status = True
+            elif color == Led.STATUS_LED_COLOR_BLUE:
+                if Led.STATUS_LED_COLOR_BLUE in led_cap_list:
+                    led_path = self.get_blue_led_path()
+                else:
+                    return False
+
+                utils.write_file(led_path, Led.LED_ON)
+                status = True
             elif color == Led.STATUS_LED_COLOR_OFF:
                 if Led.STATUS_LED_COLOR_GREEN in led_cap_list:
                     utils.write_file(self.get_green_led_path(), Led.LED_OFF)
@@ -80,6 +89,8 @@ class Led(object):
                     utils.write_file(self.get_red_led_path(), Led.LED_OFF)
                 if Led.STATUS_LED_COLOR_ORANGE in led_cap_list:
                     utils.write_file(self.get_orange_led_path(), Led.LED_OFF)
+                if Led.STATUS_LED_COLOR_BLUE in led_cap_list:
+                    utils.write_file(self.get_blue_led_path(), Led.LED_OFF)
 
                 status = True
             else:
@@ -164,15 +175,18 @@ class Led(object):
             if blink_status is not None:
                 return blink_status
 
-            if utils.read_str_from_file(self.get_green_led_path()) != Led.LED_OFF:
-                return Led.STATUS_LED_COLOR_GREEN
-
+            if Led.STATUS_LED_COLOR_GREEN in led_cap_list:
+                if utils.read_str_from_file(self.get_green_led_path()) != Led.LED_OFF:
+                    return Led.STATUS_LED_COLOR_GREEN
             if Led.STATUS_LED_COLOR_RED in led_cap_list:
                 if utils.read_str_from_file(self.get_red_led_path()) != Led.LED_OFF:
                     return Led.STATUS_LED_COLOR_RED
             if Led.STATUS_LED_COLOR_ORANGE in led_cap_list:
                 if utils.read_str_from_file(self.get_orange_led_path()) != Led.LED_OFF:
                     return Led.STATUS_LED_COLOR_RED
+            if Led.STATUS_LED_COLOR_BLUE in led_cap_list:
+                if utils.read_str_from_file(self.get_blue_led_path()) != Led.LED_OFF:
+                    return Led.STATUS_LED_COLOR_BLUE
         except (ValueError, IOError) as e:
             raise RuntimeError("Failed to read led status due to {}".format(repr(e)))
 
@@ -240,6 +254,18 @@ class Led(object):
     def get_orange_led_trigger(self):
         return os.path.join(Led.LED_PATH, 'led_{}_orange_trigger'.format(self._led_id))
 
+    def get_blue_led_path(self):
+        return os.path.join(Led.LED_PATH, 'led_{}_blue'.format(self._led_id))
+
+    def get_blue_led_delay_off_path(self):
+        return os.path.join(Led.LED_PATH, 'led_{}_blue_delay_off'.format(self._led_id))
+
+    def get_blue_led_delay_on_path(self):
+        return os.path.join(Led.LED_PATH, 'led_{}_blue_delay_on'.format(self._led_id))
+
+    def get_blue_led_trigger(self):
+        return os.path.join(Led.LED_PATH, 'led_{}_blue_trigger'.format(self._led_id))
+
     def get_led_cap_path(self):
         return os.path.join(Led.LED_PATH, 'led_{}_capability'.format(self._led_id))
 
@@ -263,6 +289,11 @@ class PsuLed(Led):
 class SystemLed(Led):
     def __init__(self):
         self._led_id = 'status'
+
+
+class SystemUidLed(Led):
+    def __init__(self):
+        self._led_id = 'uid'
 
 
 class SharedLed(object):
