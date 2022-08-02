@@ -30,6 +30,7 @@ class Led(object):
     STATUS_LED_COLOR_ORANGE = 'orange'
     STATUS_LED_COLOR_ORANGE_BLINK = 'orange_blink'
     STATUS_LED_COLOR_BLUE = 'blue'
+    STATUS_LED_COLOR_BLUE_BLINK = 'blue_blink'
     STATUS_LED_COLOR_OFF = 'off'
 
     LED_ON = '255'
@@ -118,6 +119,9 @@ class Led(object):
         elif Led.STATUS_LED_COLOR_ORANGE_BLINK == color:
             self._trigger_blink(self.get_orange_led_trigger())
             return self._set_led_blink_status(self.get_orange_led_delay_on_path(), self.get_orange_led_delay_off_path(), Led.LED_BLINK)
+        elif Led.STATUS_LED_COLOR_BLUE_BLINK == color:
+            self._trigger_blink(self.get_blue_led_trigger())
+            return self._set_led_blink_status(self.get_blue_led_delay_on_path(), self.get_blue_led_delay_off_path(), Led.LED_BLINK)
         else:
             return False
 
@@ -129,6 +133,8 @@ class Led(object):
                 self._untrigger_blink(self.get_red_led_trigger())
             if Led.STATUS_LED_COLOR_ORANGE_BLINK in led_cap_list:
                 self._untrigger_blink(self.get_orange_led_trigger())
+            if Led.STATUS_LED_COLOR_BLUE_BLINK in led_cap_list:
+                self._untrigger_blink(self.get_blue_led_trigger())
         except Exception as e:
             return
 
@@ -204,6 +210,9 @@ class Led(object):
             if Led.STATUS_LED_COLOR_ORANGE_BLINK in led_cap_list:
                 if self._is_led_blinking(self.get_orange_led_delay_on_path(), self.get_orange_led_delay_off_path()):
                     return Led.STATUS_LED_COLOR_ORANGE_BLINK
+            if Led.STATUS_LED_COLOR_BLUE_BLINK in led_cap_list:
+                if self._is_led_blinking(self.get_blue_led_delay_on_path(), self.get_blue_led_delay_off_path()):
+                    return Led.STATUS_LED_COLOR_BLUE_BLINK
         except Exception as e:
             return None
 
